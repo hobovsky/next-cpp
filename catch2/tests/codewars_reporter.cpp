@@ -1,17 +1,28 @@
-#include <catch2/reporters/catch_reporter_helpers.hpp>
-#include <catch2/reporters/catch_reporter_streaming_base.hpp>
-#include <catch2/catch_test_case_info.hpp>
-#include <catch2/reporters/catch_reporter_registrars.hpp>
-#include <catch2/catch_timer.hpp>
-
 #include <iostream>
+
+#include <catch_amalgamated.hpp>
 
 // TODO Complete custom reporter
 // - https://github.com/catchorg/Catch2/blob/devel/docs/reporters.md
 // - https://github.com/catchorg/Catch2/blob/devel/docs/reporter-events.md
 // - https://github.com/catchorg/Catch2/blob/devel/docs/test-cases-and-sections.md
 class CodewarsReporter : public Catch::StreamingReporterBase {
+
+private:
+    bool inTest = false;
+
 public:
+
+    CodewarsReporter(Catch::ReporterConfig&& config) :
+        StreamingReporterBase{ CATCH_MOVE(config) } {
+
+        //m_preferences.shouldRedirectStdOut = true;
+        // TBD: Do we want to report all assertions? XML reporter does
+        //      not, but for machine-parseable reporters I think the answer
+        //      should be yes.
+        m_preferences.shouldReportAllAssertions = true;
+    }
+
     using StreamingReporterBase::StreamingReporterBase;
 
     static std::string getDescription() {
@@ -19,39 +30,55 @@ public:
     }
 
     // Emitted before the first test case is executed.
-    void testRunStarting(Catch::TestRunInfo const& testRunInfo) override {
+    void testRunStarting(Catch::TestRunInfo const& testRunInfo) override {  
         std::cout << "testRunStarting " << testRunInfo.name << '\n';
     }
 
     // Emitted after all the test cases have been executed.
-    void testRunEnded(__attribute__((unused)) Catch::TestRunStats const& testRunStats) override {
+    void testRunEnded( Catch::TestRunStats const& testRunStats) override {
         std::cout << "testRunEnded\n";
     }
 
-    void sectionStarting(__attribute__((unused)) Catch::SectionInfo const& sectionInfo) override {
+    void sectionStarting( Catch::SectionInfo const& sectionInfo) override {
         // Cannot be used for group? Each testcase has implicit section.
+        if (inTest) return;
         std::cout << "\n<DESCRIBE::>" << sectionInfo.name << '\n';
     }
 
-    void sectionEnded(__attribute__((unused)) Catch::SectionStats const& sectionStats) override {
+    void sectionEnded( Catch::SectionStats const& sectionStats) override {
+        if (inTest) return;
         std::cout << "\n<COMPLETEDIN::>\n";
     }
 
-    void testCaseStarting(__attribute__((unused)) Catch::TestCaseInfo const& testInfo) override {
-        std::cout << "\n<IT::>" << testInfo.name << '\n';
+    void testCaseStarting( Catch::TestCaseInfo const& testInfo) override {
+        if (inTest) return;
+        std::cout << "\n<DESCRIBE::>" << testInfo.name << '\n';
     }
 
-    void testCaseEnded(__attribute__((unused)) Catch::TestCaseStats const& testCaseStats) override {
+    void testCaseEnded( Catch::TestCaseStats const& testCaseStats) override {
+        if (inTest) return;
         std::cout << "\n<COMPLETEDIN::>\n";
     }
 
     void testCasePartialStarting(Catch::TestCaseInfo const& testInfo, uint64_t partNumber) override {
-        std::cout << "TestCaseStartingPartial: " << testInfo.name << '#' << partNumber << '\n';
+        std::cout << "\n<DESCRIBE::>" << testInfo.name << '#' << partNumber << '\n';
+        // inTest = true;
     }
 
     void testCasePartialEnded(Catch::TestCaseStats const& testCaseStats, uint64_t partNumber) override {
-        std::cout << "TestCasePartialEnded: " << testCaseStats.testInfo->name << '#' << partNumber << '\n';
+        if (inTest) return;
+        std::cout << "\n<COMPLETEDIN::>\n";
     }
+
+    void assertionStarting(Catch::AssertionInfo const& info) override {
+        std::cout << "\n<IT::>Assertion" << '\n';
+    }
+    void assertionEnded(Catch::AssertionStats const& statss) override {
+        auto stats = statss.assertionResult;
+        std::cout << '\n' << (stats.isOk() ? "<PASSED::> " : "<FAILED::>") << (stats.hasMessage() ? stats.getMessage() : (stats.isOk() ? "Test passed" : "Test failed")) << '\n';
+        std::cout << "\n<COMPLETEDIN::>\n";
+    }
+
 };
 
 

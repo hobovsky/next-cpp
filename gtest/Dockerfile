@@ -1,6 +1,3 @@
-# FROM alpine:3.14
-# RUN apk add --no-cache clang binutils gtest 
-
 FROM alpine:latest
 
 RUN apk update \

@@ -5,6 +5,7 @@ using ::testing::EmptyTestEventListener;
 using ::testing::InitGoogleTest;
 using ::testing::Test;
 using ::testing::TestCase;
+using ::testing::TestSuite;
 using ::testing::TestEventListeners;
 using ::testing::TestInfo;
 using ::testing::TestResult;
@@ -19,6 +20,14 @@ class QualifiedReporter : public EmptyTestEventListener {
     // This line is used as a marker to separate the test outputs from the build outputs.
     fprintf(stdout, "--- Starting gtest\n");
     fflush(stdout);
+  }
+
+  void OnTestSuiteStart(const TestSuite& test_suite) override {
+      fprintf(stdout, "<DESCRIBE::>%s", test_suite.name());
+  }
+  void OnTestSuiteEnd(const TestSuite& test_suite) override {
+      fprintf(stdout, "\n<COMPLETEDIN::>%ld\n", test_suite.elapsed_time());
+      fflush(stdout);
   }
 
   // TODO Group by `test_case_name`? It's not identifiers so uniqueness is not guaranteed.

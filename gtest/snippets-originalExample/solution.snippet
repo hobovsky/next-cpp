@@ -1,4 +1,4 @@
-#include <challenge.h>
+#include <preloaded.h>
 
 // Returns the current counter value, and increments it.
 int Counter::Increment() {

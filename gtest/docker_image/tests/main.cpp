@@ -23,7 +23,7 @@ class QualifiedReporter : public EmptyTestEventListener {
   }
 
   void OnTestSuiteStart(const TestSuite& test_suite) override {
-      fprintf(stdout, "<DESCRIBE::>%s", test_suite.name());
+      fprintf(stdout, "\n<DESCRIBE::>%s\n", test_suite.name());
   }
   void OnTestSuiteEnd(const TestSuite& test_suite) override {
       fprintf(stdout, "\n<COMPLETEDIN::>%ld\n", test_suite.elapsed_time());

@@ -1,3 +1,6 @@
+#ifdef PRELOADED_INCLUDED
+#define PRELOADED_INCLUDED
+
 #pragma once
 
 // A simple monotonic counter.
@@ -13,3 +16,5 @@ class Counter {
   // Returns the current counter value, and decrements it.
   int Decrement();
 };
+
+#endif PRELOADED_INCLUDED

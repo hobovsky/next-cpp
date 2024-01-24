@@ -1,4 +1,6 @@
-//! CW_SOLUTION_H
+#ifdef SOLUTION_INCLUDED
+#define SOLUTION_INCLUDED
+
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -10,7 +12,8 @@ template <typename T> std::vector<T> uniqueInOrder(const std::vector<T>& iterabl
 }
 std::vector<char> uniqueInOrder(const std::string& iterable);
 
-//! CW_SOLUTION_CPP
+#endif SOLUTION_INCLUDED
+
 #include <algorithm>
 #include <string>
 #include <vector>

@@ -26,7 +26,7 @@ RUN ln -sf /usr/bin/clang /usr/bin/cc \
   && c++ --version
 
 WORKDIR /code
-COPY . .
+COPY docker_image .
 
 # ENV APP_NAME=''
 

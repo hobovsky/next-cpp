@@ -5,6 +5,7 @@
 #include <catch2/catch_timer.hpp>
 
 #include <iostream>
+#include <string>
 
 // TODO Complete custom reporter
 // - https://github.com/catchorg/Catch2/blob/devel/docs/reporters.md
@@ -14,21 +15,27 @@ class CodewarsReporter : public Catch::StreamingReporterBase {
 public:
     using StreamingReporterBase::StreamingReporterBase;
 
+	CodewarsReporter( Catch::ReporterConfig&& config ):
+		StreamingReporterBase( CATCH_MOVE(config) ) {
+		// This is necessary to emit <COMPLETEDIN::> to syntetic, per-assertion IT's
+		m_preferences.shouldReportAllAssertions = true;
+	}
+
     static std::string getDescription() {
         return "Reporter for Codewars";
     }
 
     // Emitted before the first test case is executed.
     void testRunStarting(Catch::TestRunInfo const& testRunInfo) override {
-        std::cout << "testRunStarting " << testRunInfo.name << '\n';
+        std::cout << "\ntestRunStarting " << testRunInfo.name << '\n';
     }
 
     // Emitted after all the test cases have been executed.
     void testRunEnded(__attribute__((unused)) Catch::TestRunStats const& testRunStats) override {
-        std::cout << "testRunEnded\n";
+        std::cout << "\ntestRunEnded\n";
     }
 
-    void sectionStarting(__attribute__((unused)) Catch::SectionInfo const& sectionInfo) override {
+    void sectionStarting(Catch::SectionInfo const& sectionInfo) override {
         // Cannot be used for group? Each testcase has implicit section.
         std::cout << "\n<DESCRIBE::>" << sectionInfo.name << '\n';
     }
@@ -37,8 +44,8 @@ public:
         std::cout << "\n<COMPLETEDIN::>\n";
     }
 
-    void testCaseStarting(__attribute__((unused)) Catch::TestCaseInfo const& testInfo) override {
-        std::cout << "\n<IT::>" << testInfo.name << '\n';
+    void testCaseStarting(Catch::TestCaseInfo const& testInfo) override {
+        std::cout << "\n<DESCRIBE::>" << testInfo.name << '\n';
     }
 
     void testCaseEnded(__attribute__((unused)) Catch::TestCaseStats const& testCaseStats) override {
@@ -46,12 +53,24 @@ public:
     }
 
     void testCasePartialStarting(Catch::TestCaseInfo const& testInfo, uint64_t partNumber) override {
-        std::cout << "TestCaseStartingPartial: " << testInfo.name << '#' << partNumber << '\n';
+        std::cout << "\n<DESCRIBE::>" << testInfo.name << '#' << partNumber << '\n';
     }
 
-    void testCasePartialEnded(Catch::TestCaseStats const& testCaseStats, uint64_t partNumber) override {
-        std::cout << "TestCasePartialEnded: " << testCaseStats.testInfo->name << '#' << partNumber << '\n';
+    void testCasePartialEnded(__attribute__((unused)) Catch::TestCaseStats const& testCaseStats, __attribute__((unused)) uint64_t partNumber) override {
+        std::cout << "\n<COMPLETEDIN::>\n";
     }
+	
+	void assertionStarting(__attribute__((unused)) Catch::AssertionInfo const& assertionInfo ) override {
+		std::cout << "\n<IT::>Test\n";
+	}
+	void assertionEnded(Catch::AssertionStats const& assertionStats ) override {
+		const Catch::AssertionResult& result = assertionStats.assertionResult;
+		std::string resultTag = result.succeeded() ? "PASSED" : "FAILED";
+		std::string message = result.hasMessage() ? static_cast<std::string>(result.getMessage()) : (result.succeeded() ? "Test passed" : "Test failed");
+		std::cout << "\n<" << resultTag << "::>" << message << "\n";
+		std::cout << "\n<COMPLETEDIN::>\n";
+	}
+	
 };
 
 

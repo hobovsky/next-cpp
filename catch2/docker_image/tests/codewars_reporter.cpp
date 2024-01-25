@@ -12,6 +12,10 @@
 // - https://github.com/catchorg/Catch2/blob/devel/docs/reporter-events.md
 // - https://github.com/catchorg/Catch2/blob/devel/docs/test-cases-and-sections.md
 class CodewarsReporter : public Catch::StreamingReporterBase {
+	
+private:
+	unsigned nestedSections = 0;
+	
 public:
     using StreamingReporterBase::StreamingReporterBase;
 
@@ -35,17 +39,22 @@ public:
         std::cout << "\ntestRunEnded\n";
     }
 
-    void sectionStarting(Catch::SectionInfo const& sectionInfo) override {
-        // Cannot be used for group? Each testcase has implicit section.
-        std::cout << "\n<DESCRIBE::>" << sectionInfo.name << '\n';
+    void sectionStarting(Catch::SectionInfo const& sectionInfo) override {        
+		// Do not emit groups for implicit sections, put results in
+		// the related test case (or test case partial)
+		if(nestedSections++ <= 0)
+			return;
+        std::cout << "\n<DESCRIBE::>[S]" << sectionInfo.name << '\n';
     }
 
     void sectionEnded(__attribute__((unused)) Catch::SectionStats const& sectionStats) override {
+		if(--nestedSections <= 0)
+			return;
         std::cout << "\n<COMPLETEDIN::>\n";
     }
 
     void testCaseStarting(Catch::TestCaseInfo const& testInfo) override {
-        std::cout << "\n<DESCRIBE::>" << testInfo.name << '\n';
+        std::cout << "\n<DESCRIBE::>[TC]" << testInfo.name << '\n';
     }
 
     void testCaseEnded(__attribute__((unused)) Catch::TestCaseStats const& testCaseStats) override {
@@ -53,7 +62,7 @@ public:
     }
 
     void testCasePartialStarting(Catch::TestCaseInfo const& testInfo, uint64_t partNumber) override {
-        std::cout << "\n<DESCRIBE::>" << testInfo.name << '#' << partNumber << '\n';
+        std::cout << "\n<DESCRIBE::>[TCP]" << testInfo.name << '#' << partNumber << '\n';
     }
 
     void testCasePartialEnded(__attribute__((unused)) Catch::TestCaseStats const& testCaseStats, __attribute__((unused)) uint64_t partNumber) override {
@@ -61,7 +70,7 @@ public:
     }
 	
 	void assertionStarting(__attribute__((unused)) Catch::AssertionInfo const& assertionInfo ) override {
-		std::cout << "\n<IT::>Test\n";
+		std::cout << "\n<IT::>Assertion: " << assertionInfo.macroName << "(" << assertionInfo.capturedExpression << ")\n";
 	}
 	void assertionEnded(Catch::AssertionStats const& assertionStats ) override {
 		const Catch::AssertionResult& result = assertionStats.assertionResult;

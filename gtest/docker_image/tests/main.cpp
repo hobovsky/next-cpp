@@ -1,5 +1,11 @@
-#include <stdio.h>
+#include <cstdio>
+#include <cinttypes>
+#include <string>
+
 #include <gtest/gtest.h>
+
+using ::std::fprintf;
+using ::std::fflush;
 
 using ::testing::EmptyTestEventListener;
 using ::testing::InitGoogleTest;
@@ -26,7 +32,7 @@ class QualifiedReporter : public EmptyTestEventListener {
       fprintf(stdout, "\n<DESCRIBE::>%s\n", test_suite.name());
   }
   void OnTestSuiteEnd(const TestSuite& test_suite) override {
-      fprintf(stdout, "\n<COMPLETEDIN::>%ld\n", test_suite.elapsed_time());
+      fprintf(stdout, "\n<COMPLETEDIN::>%" PRId64 "\n", test_suite.elapsed_time());
       fflush(stdout);
   }
 
@@ -53,7 +59,7 @@ class QualifiedReporter : public EmptyTestEventListener {
     if (result.Passed()) {
       fprintf(stdout, "\n<PASSED::>Test Passed\n");
     }
-    fprintf(stdout, "\n<COMPLETEDIN::>%ld\n", result.elapsed_time());
+    fprintf(stdout, "\n<COMPLETEDIN::>%" PRId64 "\n", result.elapsed_time());
     fflush(stdout);
   }
 

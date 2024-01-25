@@ -7,7 +7,7 @@ class Counter {
 
  public:
   // Creates a counter that starts at 0.
-  Counter() : counter_(1) {}
+  Counter() : counter_(0) {}
   // Returns the current counter value, and increments it.
   int Increment();
   // Returns the current counter value, and decrements it.

@@ -11,8 +11,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fmt)
 
 
-add_library(challenge solution.cpp)
+add_library(challenge preloaded.cpp solution.cpp)
 target_include_directories(challenge PUBLIC ../include)
 target_compile_features(challenge PUBLIC cxx_std_20)
 target_compile_options(challenge PUBLIC -Wall -Wextra -O2)
-target_link_libraries(challenge PUBLIC m crypto dl sqlite3 tbb fmt Threads::Threads)
+# target_link_libraries(challenge PUBLIC m crypto dl sqlite3 tbb fmt Threads::Threads)
+target_link_libraries(challenge PUBLIC m dl fmt Threads::Threads)

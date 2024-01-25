@@ -27,6 +27,7 @@ The `kata_code` directory contains source file of a kata as produced by the CW p
 
 - `ExampleExceptions` - a set of test cases to evaluate output of the reporter in case of expected and unexpected exceptions.
 - `ExampleFailureMessages` - showcase of assertions and matchers most useful for CW authors.
+- `ExampleOrganization` - a set of test fixtures instantiated in various ways evaluate output of the reporter (especially grouping of tests).
 - `ExampleParametrized` - a set of parametrized/generated tests to evaluate output of the reporter.
 - `OriginalExample` - the original example of Google Test tests prepared by kazk. It uses no CW preprocessor markers, and only `preloaded.h` and `solution.cpp` are relevant. `preloaded.cpp` and `solution.h` are also saved, but are irrelevant, and cause no problems when buiding and testing the kata.
 - `UniqueInOrder` - a kata which requires separate cpp file and header file for solution, because it requires users to implement two functions: one is a template, and one is a "normal" function. It uses CW preprocessor markers to split submitted solution snippet into two files.

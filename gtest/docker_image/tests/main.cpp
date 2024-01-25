@@ -36,10 +36,8 @@ class QualifiedReporter : public EmptyTestEventListener {
       fflush(stdout);
   }
 
-  // TODO Group by `test_case_name`? It's not identifiers so uniqueness is not guaranteed.
-  // Called before a test starts.
   void OnTestStart(const TestInfo& test_info) override {
-    fprintf(stdout, "\n<IT::>%s %s\n", test_info.test_case_name(), test_info.name());
+    fprintf(stdout, "\n<IT::>%s\n", test_info.name());
     fflush(stdout);
   }
 
